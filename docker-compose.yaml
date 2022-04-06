@@ -1,0 +1,9 @@
+services:
+  pdf-printer:
+    build:
+      dockerfile: Dockerfile
+    image: pdf-printer:latest
+    ports:
+      - "80:8080"
+    environment:
+      LOG_WRITER: "1"
