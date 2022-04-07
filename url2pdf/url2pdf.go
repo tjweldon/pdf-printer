@@ -1,14 +1,17 @@
 package url2pdf
 
-import html2pdf "github.com/SebastiaanKlippert/go-wkhtmltopdf"
+import (
+	html2pdf "github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"log"
+)
 
-func Url2PDF(url string) (filename string, err error) {
-	filename = "./tmp.pdf"
+func Url2PDF(url, tempPath string) (err error) {
+	log.Printf("Url to be rendered: %s", url)
 
 	// Create new PDF generator
 	pdfFile, err := html2pdf.NewPDFGenerator()
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Set global options
@@ -30,14 +33,14 @@ func Url2PDF(url string) (filename string, err error) {
 	// Create PDF document in internal buffer
 	err = pdfFile.Create()
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Write buffer contents to file on disk
-	err = pdfFile.WriteFile(filename)
+	err = pdfFile.WriteFile(tempPath)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return filename, nil
+	return nil
 }
