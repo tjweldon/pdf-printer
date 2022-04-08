@@ -23,4 +23,4 @@ COPY . .
 RUN go build && cp pdf-printer /
 
 
-ENTRYPOINT /pdf-printer
+CMD ["/pdf-printer", "8080"]

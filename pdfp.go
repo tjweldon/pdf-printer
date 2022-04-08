@@ -82,7 +82,8 @@ func main() {
 }
 
 func initPort() (port string) {
-	port = "80"
+	port = "8080"
+	log.Printf("args supplied: %v", os.Args)
 	if len(os.Args) > 1 {
 		userPort := os.Args[1]
 		if _, err := strconv.Atoi(userPort); err == nil {
@@ -90,6 +91,7 @@ func initPort() (port string) {
 		}
 	}
 
+	log.Printf("Initialising port as %s", port)
 	return port
 }
 
