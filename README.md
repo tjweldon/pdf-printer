@@ -9,7 +9,7 @@ A super simple golang POC for a html to pdf web service with an HTTP api and bui
  - Docker.
  - `curl` if you want to use the provided client.sh script to test the service.
 
-### Build & run
+### Build & Run the Service
  - Copy the downloaded golang for linux tarball to the project root.
  - Run the following commands from the project root:
 
@@ -17,6 +17,8 @@ A super simple golang POC for a html to pdf web service with an HTTP api and bui
 docker build -t printer .
 docker run -d printer
 ```
+
+## Muck about with it a bit
  - Run `docker ps` now and you should see output resembling the follwing snippet
 
 ```
