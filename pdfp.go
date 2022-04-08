@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"tjweldon/pdf-printer/url2pdf"
 )
 
@@ -41,20 +43,22 @@ func index(w http.ResponseWriter, req *http.Request) {
 	case "POST":
 		defer func() {
 			if err := os.Remove(tempPath); err != nil {
-				log.Print(err)
+				log.Printf("Error removing temp pdf: %s", err)
 			}
 		}()
 		if err := req.ParseForm(); err != nil {
 			w.WriteHeader(500)
-			log.Println(err)
+			log.Printf("Error parsing formdata: %s", err)
 			return
 		}
 
 		target := req.FormValue("url")
 		log.Printf("Request for print of page at %s to pdf received", target)
-		if err := url2pdf.Url2PDF(tempPath, target); err != nil {
+		if err := url2pdf.Url2PDF(target, tempPath); err != nil {
 			w.WriteHeader(500)
 			log.Println(err)
+			_, _ = fmt.Fprintf(w, "Internal Server Error: %s", err)
+			return
 		}
 		http.ServeFile(w, req, tempPath)
 	}
@@ -74,12 +78,24 @@ func main() {
 
 	http.HandleFunc("/print", middlewares.Decorate(index))
 
-	log.Fatal(http.ListenAndServe(":80", nil))
+	log.Fatal(http.ListenAndServe(":"+initPort(), nil))
+}
+
+func initPort() (port string) {
+	port = "80"
+	if len(os.Args) > 1 {
+		userPort := os.Args[1]
+		if _, err := strconv.Atoi(userPort); err == nil {
+			port = userPort
+		}
+	}
+
+	return port
 }
 
 func initLogfile() (logfile *os.File, err error) {
 	logfile = os.Stdout
-	if logfilePath, ok := os.LookupEnv("PDFP_LOGFILE"); !ok {
+	if logfilePath, ok := os.LookupEnv("PDFP_LOGFILE"); ok {
 		logfile, err = os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			return nil, err
